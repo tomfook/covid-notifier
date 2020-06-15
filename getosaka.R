@@ -6,7 +6,7 @@ library(readxl)
 osaka_url <- "http://www.pref.osaka.lg.jp/attach/23711/00346644/youseisyajyouhou.xlsx"
 file_latest <- "infections_osaka.csv"
 file_record <- "infections_record_osaka.csv"
-slack_webhookurl <- "https://hooks.slack.com/services/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"
+slack_webhookurl <- "https://hooks.slack.com/services/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"
 
 GET(osaka_url, write_disk(tf <- tempfile(fileext = ".xlsx")))                 
 infections <- read_excel(
