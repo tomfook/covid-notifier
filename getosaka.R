@@ -35,7 +35,7 @@ if(check_health){
       POST(url = slack_webhookurl, encode = "json", body = list(text = text))
     }
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = "No new infections!"))
+    POST(url = slack_webhookurl, encode = "json", body = list(text = "Osaka: No new infections!"))
   }
 }
 
