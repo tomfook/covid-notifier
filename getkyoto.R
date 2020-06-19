@@ -4,29 +4,26 @@ library(magrittr)
 library(rvest)
 library(httr)
 
-source("secret.R") #slack_webhookurl
 file_latest <- "infections_kyoto.csv"
 file_record <- "infections_record_kyoto.csv"
+source("secret.R") #slack_webhookurl
 
 
-latest_url <- "http://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html"
 url1 <- "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html"
-url2 <- "http://www.pref.kyoto.jp/kentai/corona/hassei51-100.html"
-url3 <- "http://www.pref.kyoto.jp/kentai/corona/hassei206-309.html"
 
-urls <- c(latest_url, url1, url2, url3)
+urls <- c(url1)
 
 
-colnames_def <- c("","発表日","年代", "性別", "居住地等", "資料", "備考", "状況")
-colnames_mod <- c("index","発表日","年代", "性別", "居住地等", "資料", "備考", "状況")
+colnames_def <- c("","発表日","年代", "性別", "居住地等", "資料")
+colnames_mod <- c("index","発表日","年代", "性別", "居住地等", "資料")
 
 get_infections <- function(url){
   read_html(url) %>%
     html_table %>%
     keep(~all(names(.)==colnames_def)) %>%
-    .[[1]] %>%
-    magrittr::set_names(colnames_mod) %>%
-    mutate(年代 = as.character(年代)) %>%
+    map(magrittr::set_names, colnames_mod) %>%
+    map(mutate, 年代 = as.character(年代)) %>%
+    bind_rows
 }
 
 infections <- map_df(urls, get_infections) %>%
@@ -40,12 +37,16 @@ infections <- map_df(urls, get_infections) %>%
   select(-gengo, -wareki, -year, -md) 
 
 
+if (any(dir() %in% file_latest)){
+  old_infections <- read_csv(file_latest, col_types = "ccccccD")
+}else{
+  old_infections <- infections
+}
 
-old_infections <- read_csv(file_latest)
 diff <- infections %>% anti_join(old_infections, by = "index")
 
-update <- infections %>% setdiff(old_infections) %>% anti_join(diff, by = "index")
-update_old <- semi_join(old_infections, update, by = "index")
+#update <- infections %>% setdiff(old_infections) %>% anti_join(diff, by = "index")
+#update_old <- semi_join(old_infections, update, by = "index")
 
 
 growth <- nrow(infections) - nrow(old_infections) 
@@ -53,16 +54,15 @@ growth <- nrow(infections) - nrow(old_infections)
 check_health <- growth >= 0
 if(check_health){
   write_csv(infections, file_latest, na = "")
-  if(growth > 0){
-    #POST diff to slack
-    ## POST(url = slack_webhookurl, body = '{"text":"Hello, World!"}' )
-    #POST update to slack
+  if(growth > 0){ 
+    for(i in seq(to = nrow(diff))){
+      text <- paste0("京都府発表\n", "発表日：", diff[i,]$発表日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地等：", diff[i,]$居住地等)
+      POST(url = slack_webhookurl, encode = "json", body = list(text = text))
+    }
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = "Today we don't have any infections!!"))
+    POST(url = slack_webhookurl, encode = "json", body = list(text = "Kyoto: No new infections!"))
   }
-} else {
-  POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: something happened. Check record 'infections_record.csv'"))
-} 
+}
 
 
 write_csv(
