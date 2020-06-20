@@ -3,11 +3,14 @@ library(lubridate)
 library(httr)
 library(readxl)
 
-osaka_url <- "http://www.pref.osaka.lg.jp/attach/23711/00346644/youseisyajyouhou.xlsx"
-file_latest <- "infections_osaka.csv"
-file_record <- "infections_record_osaka.csv"
 
+pref <- "osaka"
+
+file_latest <- paste0("infections_", pref, ".csv")
+file_record <- paste0("infections_record_", pref, ".csv") 
 source("secret.R") #slack_webhookurl
+
+osaka_url <- "http://www.pref.osaka.lg.jp/attach/23711/00346644/youseisyajyouhou.xlsx"
 
 GET(osaka_url, write_disk(tf <- tempfile(fileext = ".xlsx")))                 
 infections <- read_excel(
@@ -37,6 +40,8 @@ if(check_health){
   }else{
     POST(url = slack_webhookurl, encode = "json", body = list(text = "Osaka: No new infections!"))
   }
+}else{
+  POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getosaka.R"))
 }
 
 write_csv(

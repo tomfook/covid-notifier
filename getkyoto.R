@@ -4,8 +4,11 @@ library(magrittr)
 library(rvest)
 library(httr)
 
-file_latest <- "infections_kyoto.csv"
-file_record <- "infections_record_kyoto.csv"
+
+pref <- "kyoto"
+
+file_latest <- paste0("infections_", pref, ".csv")
+file_record <- paste0("infections_record_", pref, ".csv")
 source("secret.R") #slack_webhookurl
 
 
@@ -62,6 +65,8 @@ if(check_health){
   }else{
     POST(url = slack_webhookurl, encode = "json", body = list(text = "Kyoto: No new infections!"))
   }
+}else{
+  POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getkyoto.R"))
 }
 
 

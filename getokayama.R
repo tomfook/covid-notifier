@@ -67,6 +67,8 @@ if(check_health){
   }else{
     POST(url = slack_webhookurl, encode = "json", body = list(text = "Okayama: No new infections!"))
   }
+}else{
+  POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getokayama.R"))
 }
 
 
