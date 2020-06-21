@@ -59,7 +59,11 @@ if(check_health){
   write_csv(infections, file_latest, na = "")
   if(growth > 0){ 
     for(i in seq(to = nrow(diff))){
-      text <- paste0("京都府発表\n", "発表日：", diff[i,]$発表日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地等：", diff[i,]$居住地等)
+      text <- paste0(
+		     "京都府発表\n",
+		     "発表日：", diff[i,]$発表日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地等：", diff[i,]$居住地等, "\n",
+		     url1
+      )
       POST(url = slack_webhookurl, encode = "json", body = list(text = text))
     }
   }else{

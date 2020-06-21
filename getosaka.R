@@ -11,6 +11,7 @@ file_record <- paste0("infections_record_", pref, ".csv")
 source("secret.R") #slack_webhookurl
 
 osaka_url <- "http://www.pref.osaka.lg.jp/attach/23711/00346644/youseisyajyouhou.xlsx"
+url_guide <- "http://www.pref.osaka.lg.jp/hodo/index.php?site=fumin"
 
 GET(osaka_url, write_disk(tf <- tempfile(fileext = ".xlsx")))                 
 infections <- read_excel(
@@ -34,7 +35,11 @@ if(check_health){
   write_csv(infections, file_latest, na = "")
   if(growth > 0){ 
     for(i in seq(to = nrow(diff))){
-      text <- paste0("大阪府発表\n", "報道提供日：", diff[i,]$報道提供日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地)
+      text <- paste0(
+		     "大阪府発表\n",
+		     "報道提供日：", diff[i,]$報道提供日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地, "\n",
+		     url_guide,
+      )
       POST(url = slack_webhookurl, encode = "json", body = list(text = text))
     }
   }else{
