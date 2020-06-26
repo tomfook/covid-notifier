@@ -38,7 +38,7 @@ if(check_health){
       text <- paste0(
 		     "大阪府発表\n",
 		     "報道提供日：", diff[i,]$報道提供日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地, "\n",
-		     url_guide,
+		     url_guide
       )
       POST(url = slack_webhookurl, encode = "json", body = list(text = text))
     }
