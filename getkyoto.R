@@ -7,8 +7,8 @@ library(httr)
 
 pref <- "kyoto"
 
-file_latest <- paste0("infections_", pref, ".csv")
-file_record <- paste0("infections_record_", pref, ".csv")
+file_latest <- paste0("data/infections_", pref, ".csv")
+file_record <- paste0("data/infections_record_", pref, ".csv")
 source("secret.R") #slack_webhookurl
 
 
