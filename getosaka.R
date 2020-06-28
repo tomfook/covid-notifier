@@ -36,14 +36,14 @@ if(check_health){
   if(growth > 0){ 
     for(i in seq(to = nrow(diff))){
       text <- paste0(
-		     "大阪府発表\n",
+		     ":han: 大阪府発表\n",
 		     "報道日：", diff[i,]$date, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地, "\n",
 		     url_guide
       )
       POST(url = slack_webhookurl, encode = "json", body = list(text = text))
     }
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = "Osaka: No new infections!"))
+    POST(url = slack_webhookurl, encode = "json", body = list(text = ":han: Osaka: No new infections!"))
   }
 }else{
   POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getosaka.R"))
