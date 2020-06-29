@@ -6,8 +6,10 @@ library(jsonlite)
 
 pref <- "osaka"
 
-file_latest <- paste0("data/infections_", pref, ".csv")
-file_record <- paste0("data/infections_record_", pref, ".csv") 
+file_latest <- paste0("infections_", pref, ".csv")
+file_latest_path <- paste0("data/", file_latest)
+file_record <- paste0("infections_record_", pref, ".csv")
+file_record_path <- paste0("data/", file_record)
 source("secret.R") #slack_webhookurl
 
 osaka_url <- "https://raw.githubusercontent.com/codeforosaka/covid19/development/data/data.json"
@@ -21,8 +23,8 @@ infections <- GET(osaka_url) %>%
   bind_rows %>%
   mutate(No = as.character(No), date = ymd(date))
 
-if (any(dir() %in% file_latest)){
-  old_infections <- read_csv(file_latest, col_types = "cccccccD")
+if (any(dir("data") %in% file_latest)){
+  old_infections <- read_csv(file_latest_path, col_types = "cccccccD")
 }else{
   old_infections <- infections
 }
@@ -55,5 +57,5 @@ write_csv(
         timestamp = paste(now(), "JST"),
         check_health = check_health
       ),
-    file_record, na = "", append = TRUE
+    file_record_path, na = "", append = TRUE
 )
