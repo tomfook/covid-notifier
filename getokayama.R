@@ -61,13 +61,25 @@ if(check_health){
 		     "月日：", diff[i,]$月日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地, "\n",
 		     url1
       )
-      POST(url = slack_webhookurl, encode = "json", body = list(text = text))
+      if(!TEST){
+        POST(url = slack_webhookurl, encode = "json", body = list(text = text))
+      }else{
+	print(paste("TEST:", text))
+      }
     }
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = ":oka: Okayama: No new infections!"))
+    if(!TEST){
+      POST(url = slack_webhookurl, encode = "json", body = list(text = ":oka: Okayama: No new infections!"))
+    }else{
+      print("TEST: No infection in Okayama")
+    }
   }
 }else{
-  POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getokayama.R"))
+  if(!TEST){
+    POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getokayama.R"))
+  }else{
+    print("TEST: error in getokayama.R")
+  }
 }
 
 

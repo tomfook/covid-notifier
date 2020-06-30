@@ -2,9 +2,10 @@ library(tidyverse)
 library(lubridate)
 library(magrittr)
 library(rvest)
-library(httr)
-
+library(httr) 
 library(jsonlite) 
+
+TEST <- TRUE
 
 source("secret.R") #slack_webhookurl 
 

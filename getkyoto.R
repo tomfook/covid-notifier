@@ -40,10 +40,7 @@ if (any(dir("data") %in% file_latest)){
   old_infections <- infections
 }
 
-diff <- infections %>% anti_join(old_infections, by = "index")
-
-#update <- infections %>% setdiff(old_infections) %>% anti_join(diff, by = "index")
-#update_old <- semi_join(old_infections, update, by = "index")
+diff <- infections %>% anti_join(old_infections, by = "index") 
 
 
 growth <- nrow(infections) - nrow(old_infections) 
@@ -58,13 +55,25 @@ if(check_health){
 		     "発表日：", diff[i,]$発表日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地等：", diff[i,]$居住地等, "\n",
 		     url1
       )
-      POST(url = slack_webhookurl, encode = "json", body = list(text = text))
+      if(!TEST){
+        POST(url = slack_webhookurl, encode = "json", body = list(text = text))
+      }else{
+	print(paste("TEST:", text))
+      }
     }
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = ":kyo: Kyoto: No new infections!"))
+    if(!TEST){
+      POST(url = slack_webhookurl, encode = "json", body = list(text = ":kyo: Kyoto: No new infections!"))
+    }else{
+      print("TEST: No infection in Kyoto")
+    }
   }
 }else{
-  POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getkyoto.R"))
+  if(!TEST){
+    POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getkyoto.R"))
+  }else{
+    print("TEST: ERROR in getkyoto.R")
+  }
 }
 
 
