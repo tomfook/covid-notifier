@@ -34,7 +34,7 @@ diff <- infections %>% anti_join(old_infections, by = "No")
 growth <- nrow(infections) - nrow(old_infections) 
 check_health <- growth >= 0
 if(check_health){
-  write_csv(infections, file_latest, na = "")
+  write_csv(infections, file_latest_path, na = "")
   if(growth > 0){ 
     for(i in seq(to = nrow(diff))){
       text <- paste0(
