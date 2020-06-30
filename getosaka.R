@@ -35,24 +35,22 @@ if(check_health){
 		     "報道日：", diff[i,]$date, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地, "\n",
 		     url_guide
       )
-      if(!TEST){
-        POST(url = slack_webhookurl, encode = "json", body = list(text = text))
-      }else{
+      if(TEST){
 	print(paste("TEST:", text))
+      }else{
+        POST(url = slack_webhookurl, encode = "json", body = list(text = text))
       }
     }
   }else{
-    if(!TEST){
-      POST(url = slack_webhookurl, encode = "json", body = list(text = ":han: Osaka: No new infections!"))
-    }else{
+    if(TEST){
       print("TEST: No infection in Osaka")
     }
   }
 }else{
-  if(!TEST){
-    POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getosaka.R"))
-  }else{
+  if(TEST){
     print("TEST: error in getosaka.R")
+  }else{
+    POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getosaka.R"))
   }
 }
 
