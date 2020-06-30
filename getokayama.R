@@ -1,16 +1,9 @@
-library(tidyverse)
-library(lubridate)
-library(magrittr)
-library(rvest)
-library(httr)
-
 pref <- "okayama"
 
 file_latest <- paste0("infections_", pref, ".csv")
 file_latest_path <- paste0("data/", file_latest)
 file_record <- paste0("infections_record_", pref, ".csv")
 file_record_path <- paste0("data/", file_record)
-source("secret.R") #slack_webhookurl 
 
 url1 <- "https://www.pref.okayama.jp/page/667843.html"
 

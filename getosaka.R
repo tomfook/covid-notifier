@@ -1,16 +1,9 @@
-library(tidyverse)
-library(lubridate)
-library(httr)
-library(jsonlite)
-
-
 pref <- "osaka"
 
 file_latest <- paste0("infections_", pref, ".csv")
 file_latest_path <- paste0("data/", file_latest)
 file_record <- paste0("infections_record_", pref, ".csv")
 file_record_path <- paste0("data/", file_record)
-source("secret.R") #slack_webhookurl
 
 osaka_url <- "https://raw.githubusercontent.com/codeforosaka/covid19/development/data/data.json"
 url_guide <- "http://www.pref.osaka.lg.jp/hodo/index.php?site=fumin"
