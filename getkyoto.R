@@ -59,6 +59,7 @@ if(check_health){
 	print(paste("TEST:", text))
       }else{
         POST(url = slack_webhookurl, encode = "json", body = list(text = text))
+        POST(url = slack_webhookurl2, encode = "json", body = list(text = text))
       }
     }
   }else{
