@@ -28,9 +28,9 @@ if(check_health){
   }
 }else{
   if(TEST){
-    print(paste0("TEST: error in ", pref))
+    print(paste0("TEST: alert in ", pref))
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ERROR: Something happened in ", pref)))
+    POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ALERT: Something happened in ", pref)))
   }
 }
 
