@@ -6,7 +6,6 @@ file_record <- paste0("infections_record_", pref, ".csv")
 file_record_path <- paste0("data/", file_record)
 
 osaka_url <- "https://raw.githubusercontent.com/codeforosaka/covid19/development/data/data.json"
-url_guide <- "http://www.pref.osaka.lg.jp/hodo/index.php?site=fumin"
 
 infections <- GET(osaka_url) %>%
   content %>%
@@ -29,18 +28,7 @@ check_health <- growth >= 0
 if(check_health){
   write_csv(infections, file_latest_path, na = "")
   if(growth > 0){ 
-    for(i in seq(to = nrow(diff))){
-      text <- paste0(
-		     ":han: 大阪府発表\n",
-		     "報道日：", diff[i,]$date, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地：", diff[i,]$居住地, "\n",
-		     url_guide
-      )
-      if(TEST){
-	print(paste("TEST:", text))
-      }else{
-        POST(url = slack_webhookurl, encode = "json", body = list(text = text))
-      }
-    }
+    post_infection(diff, pref, slack_webhookurl, TEST) 
   }else{
     if(TEST){
       print("TEST: No infection in Osaka")
@@ -54,11 +42,13 @@ if(check_health){
   }
 }
 
-write_csv(
-    infections %>%
-      mutate(
-        timestamp = paste(now(), "JST"),
-        check_health = check_health
-      ),
-    file_record_path, na = "", append = TRUE
-)
+if(!TEST){
+  write_csv(
+      infections %>%
+        mutate(
+          timestamp = paste(now(), "JST"),
+          check_health = check_health
+        ),
+      file_record_path, na = "", append = TRUE
+  )
+}

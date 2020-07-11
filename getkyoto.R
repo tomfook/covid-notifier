@@ -42,25 +42,14 @@ if (any(dir("data") %in% file_latest)){
 
 diff <- infections %>% anti_join(old_infections, by = "index") 
 
-
 growth <- nrow(infections) - nrow(old_infections) 
 
 check_health <- growth >= 0
 if(check_health){
   write_csv(infections, file_latest_path, na = "")
   if(growth > 0){ 
-    for(i in seq(to = nrow(diff))){
-      text <- paste0(
-		     ":kyo: 京都府発表\n",
-		     "発表日：", diff[i,]$発表日, " 年代:", diff[i,]$年代, " 性別：", diff[i,]$性別, " 居住地等：", diff[i,]$居住地等, "\n",
-		     url1
-      )
-      if(TEST){
-	print(paste("TEST:", text))
-      }else{
-        POST(url = slack_webhookurl, encode = "json", body = list(text = text))
-      }
-    }
+    post_infection(diff, pref, slack_webhookurl, TEST) 
+    post_infection(diff, pref, slack_webhookurl2, TEST)
   }else{
     if(TEST){
       print("TEST: No infection in Kyoto")
@@ -74,13 +63,14 @@ if(check_health){
   }
 }
 
-
-write_csv(
-    infections %>%
-      mutate(
-        timestamp = paste(now(), "JST"),
-        check_health = check_health
-      ),
-    file_record_path, na = "", append = TRUE
-)
+if(!TEST){
+  write_csv(
+      infections %>%
+        mutate(
+          timestamp = paste(now(), "JST"),
+          check_health = check_health
+        ),
+      file_record_path, na = "", append = TRUE
+  )
+}
 

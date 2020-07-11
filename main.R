@@ -7,7 +7,9 @@ library(jsonlite)
 
 TEST <- FALSE
 
-source("secret.R") #slack_webhookurl 
+source("secret.R") #slack_webhookurls
+
+source("src/functions.R")
 
 source("getkyoto.R")
 source("getosaka.R")
