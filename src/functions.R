@@ -8,7 +8,7 @@ post_infection <- function(diff, pref, target, test){
   col_location <- switch(pref, kyoto = "居住地等", osaka = "居住地", okayama = "居住地")
   url_guide <- switch(pref,
 		    kyoto = "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html",
-		    osaka = "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html",
+		    osaka = "http://www.pref.osaka.lg.jp/hodo/index.php?site=fumin",
 		    okayama = "https://www.pref.okayama.jp/page/667843.html"
 		    ) 
   
