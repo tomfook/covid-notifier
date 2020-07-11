@@ -5,15 +5,7 @@ file_latest_path <- paste0("data/", file_latest)
 file_record <- paste0("infections_record_", pref, ".csv")
 file_record_path <- paste0("data/", file_record)
 
-osaka_url <- "https://raw.githubusercontent.com/codeforosaka/covid19/development/data/data.json"
-
-infections <- GET(osaka_url) %>%
-  content %>%
-  parse_json %>%
-  .[["patients"]] %>%
-  .[["data"]] %>%
-  bind_rows %>%
-  mutate(No = as.character(No), date = ymd(date))
+infections <- get_latest_osaka()
 
 if (any(dir("data") %in% file_latest)){
   old_infections <- read_csv(file_latest_path, col_types = "cccccccD")

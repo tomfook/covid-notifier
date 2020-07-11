@@ -28,3 +28,12 @@ post_infection <- function(diff, pref, target, test){
   }
 }
 
+
+zentohan <- function(text){
+  out <- text
+  zennum <- "０１２３４５６７８９"
+  for(i in 0:9){
+    out <- gsub(substr(zennum, i+1, i+1), i, out)
+  }
+  return(out)
+}

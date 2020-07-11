@@ -5,40 +5,7 @@ file_latest_path <- paste0("data/", file_latest)
 file_record <- paste0("infections_record_", pref, ".csv")
 file_record_path <- paste0("data/", file_record)
 
-url1 <- "https://www.pref.okayama.jp/page/667843.html"
-
-urls <- c(url1)
-
-colnames_def <- c("","月日", "年代", "性別", "居住地", "備考")
-colnames_mod <- c("index","月日", "年代", "性別", "居住地", "備考")
-
-get_infections <- function(url){
-  read_html(url) %>%
-    html_table %>%
-    keep(~all(names(.)==colnames_def)) %>%
-    map(magrittr::set_names, colnames_mod) %>%
-    map(mutate, 年代 = as.character(年代)) %>%
-    bind_rows
-}
-
-zentohan <- function(text){
-  out <- text
-  zennum <- "０１２３４５６７８９"
-  for(i in 0:9){
-    out <- gsub(substr(zennum, i+1, i+1), i, out)
-  }
-  return(out)
-}
- 
-infections <- map_df(urls, get_infections) %>%
-  mutate_all(zentohan) %>%
-  mutate(
-    year = 2020,
-    md = 月日 %>% str_replace("月", "-") %>% str_replace("日", ""),
-    date_public = paste0(year, "-", md) %>% ymd
-  ) %>%
-  select(-year, -md)
-
+infections <- get_latest_okayama()
 
 if (any(dir("data") %in% file_latest)){
   old_infections <- read_csv(file_latest_path, col_types = "ccccccD")

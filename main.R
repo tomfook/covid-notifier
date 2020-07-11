@@ -10,6 +10,7 @@ TEST <- FALSE
 source("secret.R") #slack_webhookurls
 
 source("src/functions.R")
+source("src/scraper.R")
 
 source("getkyoto.R")
 source("getosaka.R")
