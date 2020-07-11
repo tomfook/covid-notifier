@@ -21,7 +21,7 @@ post_infection <- function(diff, pref, target, test){
 		  "\n", url_guide
 		  ) 
     if(test){
-      print(paste("TEST:", text))
+      print(paste0("TEST for ", target, ": ", text))
     }else{
       POST(url = target, encode = "json", body = list(text = text))
     }

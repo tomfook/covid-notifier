@@ -23,14 +23,14 @@ if(check_health){
     post_infection(diff, pref, slack_webhookurl, TEST) 
   }else{
     if(TEST){
-      print("TEST: No infection in Osaka")
+      print(paste0("TEST: No infection in ", pref))
     }
   }
 }else{
   if(TEST){
-    print("TEST: error in getosaka.R")
+    print(paste0("TEST: error in ", pref))
   }else{
-    POST(url = slack_webhookurl, encode = "json", body = list(text = "ERROR: Something happened in getosaka.R"))
+    POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ERROR: Something happened in ", pref)))
   }
 }
 
