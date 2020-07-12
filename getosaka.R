@@ -13,7 +13,7 @@ if (any(dir("data") %in% file_latest)){
   old_infections <- infections
 }
 
-diff <- infections %>% anti_join(old_infections, by = "No") 
+diff <- infections %>% anti_join(old_infections, by = "index") 
 
 growth <- nrow(infections) - nrow(old_infections) 
 check_health <- growth >= 0

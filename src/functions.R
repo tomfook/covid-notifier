@@ -1,11 +1,8 @@
-
 post_infection <- function(diff, pref, target, test){
+  col <- c(date = "発表日", age = "年代", sex = "性別", location = "居住地")
+
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県")
   icon <- switch(pref, kyoto = ":kyo:", osaka = ":han:", okayama = ":oka:")
-  col_date <- switch(pref, kyoto = "発表日", osaka = "date", okayama = "月日")
-  col_age <- "年代"
-  col_sex <- "性別"
-  col_location <- switch(pref, kyoto = "居住地等", osaka = "居住地", okayama = "居住地")
   url_guide <- switch(pref,
 		    kyoto = "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html",
 		    osaka = "http://www.pref.osaka.lg.jp/hodo/index.php?site=fumin",
@@ -14,10 +11,10 @@ post_infection <- function(diff, pref, target, test){
   
   for(i in seq(to = nrow(diff))){
     text <- paste0(icon, " ", pref_name, "発表\n",
-		  col_date, ": ", diff[i,][[col_date]],
-		  col_age, ": ", diff[i,][[col_age]],
-		  col_sex, ": ", diff[i,][[col_sex]],
-		  col_location, ": ", diff[i,][[col_location]],
+		  col["date"], ": ", diff[i,][[col["date"]]], ", ",
+		  col["age"], ": ", diff[i,][[col["age"]]], ", ",
+		  col["sex"], ": ", diff[i,][[col["sex"]]], ", ",
+		  col["location"], ": ", diff[i,][[col["location"]]],
 		  "\n", url_guide
 		  ) 
     if(test){

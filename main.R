@@ -5,7 +5,7 @@ library(rvest)
 library(httr) 
 library(jsonlite) 
 
-TEST <- FALSE
+TEST <- TRUE
 
 source("secret.R") #slack_webhookurls
 

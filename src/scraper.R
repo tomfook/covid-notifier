@@ -1,3 +1,6 @@
+# infection data schema 
+# ~index, ~発表日, ~年代, ~性別, ~居住地
+
 get_latest_kyoto <- function(){ 
   url1 <- "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html" 
   urls <- c(url1) 
@@ -22,7 +25,8 @@ get_latest_kyoto <- function(){
       md = str_extract(発表日, "[^年]*$") %>% str_replace("月", "-") %>% str_replace("日", ""),
       date_public = paste0(year, "-", md) %>% ymd
     ) %>% 
-    select(-gengo, -wareki, -year, -md) 
+    select(-gengo, -wareki, -year, -md) %>%
+    rename(居住地 = 居住地等)
 
   return(infections)
 }
@@ -36,14 +40,14 @@ get_latest_osaka <- function(){
     .[["patients"]] %>%
     .[["data"]] %>%
     bind_rows %>%
-    mutate(No = as.character(No), date = ymd(date))
+    mutate(No = as.character(No), date = ymd(date)) %>%
+    rename(発表日 = date, index = No)
 
   return(infections)
 }
 
 get_latest_okayama <- function(){
   url1 <- "https://www.pref.okayama.jp/page/667843.html"
-  
   urls <- c(url1)
   
   colnames_def <- c("","月日", "年代", "性別", "居住地", "備考")
@@ -65,5 +69,8 @@ get_latest_okayama <- function(){
       md = 月日 %>% str_replace("月", "-") %>% str_replace("日", ""),
       date_public = paste0(year, "-", md) %>% ymd
     ) %>%
-    select(-year, -md)
+    select(-year, -md) %>%
+    rename(発表日 = 月日)
+
+  return(infections)
 }
