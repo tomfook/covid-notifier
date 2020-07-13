@@ -34,7 +34,7 @@ post_infection <- function(diff, pref, target, test){
   }
 }
 
-notify_infection <- function(infections, pref, target){
+notify_infection <- function(infections, pref, target, test){
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
   
@@ -51,14 +51,14 @@ notify_infection <- function(infections, pref, target){
   check_health <- growth >= 0
   if(check_health){
     if(growth > 0){ 
-      post_infection(diff, pref, target, TEST)
+      post_infection(diff, pref, target, test)
     }else{
-      if(TEST){
+      if(test){
         print(paste0("TEST for ", target, ": No infection in ", pref))
       }
     }
   }else{
-    if(TEST){
+    if(test){
       print(paste0("TEST for ", target, ": alert in ", pref))
     }else{
       POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ALERT: Something happened in ", pref)))
