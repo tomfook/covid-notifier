@@ -8,7 +8,7 @@ file_record_path <- paste0("data/", file_record)
 infections <- get_latest_osaka()
 
 if (any(dir("data") %in% file_latest)){
-  old_infections <- read_csv(file_latest_path, col_types = "cccccccD")
+  old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
 }else{
   old_infections <- infections
 }

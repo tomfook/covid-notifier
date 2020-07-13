@@ -23,7 +23,7 @@ get_latest_kyoto <- function(){
       wareki = str_extract(発表日, "^.*年") %>% parse_number,
       year = wareki + if_else(gengo == "令和", 2018, NA_real_),
       md = str_extract(発表日, "[^年]*$") %>% str_replace("月", "-") %>% str_replace("日", ""),
-      date_public = paste0(year, "-", md) %>% ymd
+      date_public = paste0(year, "-", md)
     ) %>% 
     select(-gengo, -wareki, -year, -md) %>%
     rename(居住地 = 居住地等)
@@ -40,7 +40,7 @@ get_latest_osaka <- function(){
     .[["patients"]] %>%
     .[["data"]] %>%
     bind_rows %>%
-    mutate(No = as.character(No), date = ymd(date)) %>%
+    mutate(No = as.character(No)) %>%
     rename(発表日 = date, index = No)
 
   return(infections)
@@ -67,7 +67,7 @@ get_latest_okayama <- function(){
     mutate(
       year = 2020,
       md = 月日 %>% str_replace("月", "-") %>% str_replace("日", ""),
-      date_public = paste0(year, "-", md) %>% ymd
+      date_public = paste0(year, "-", md)
     ) %>%
     select(-year, -md) %>%
     rename(発表日 = 月日)
