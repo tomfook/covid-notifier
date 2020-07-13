@@ -34,6 +34,55 @@ post_infection <- function(diff, pref, target, test){
   }
 }
 
+notify_infection <- function(infections, pref, target){
+  file_latest <- paste0("infections_", pref, ".csv")
+  file_latest_path <- paste0("data/", file_latest)
+  
+  if (any(dir("data") %in% file_latest)){
+    old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
+  }else{
+    old_infections <- infections
+  }
+  
+  diff <- infections %>% anti_join(old_infections, by = "index") 
+  
+  growth <- nrow(infections) - nrow(old_infections) 
+  
+  check_health <- growth >= 0
+  if(check_health){
+    if(growth > 0){ 
+      post_infection(diff, pref, target, TEST)
+    }else{
+      if(TEST){
+        print(paste0("TEST for ", target, ": No infection in ", pref))
+      }
+    }
+  }else{
+    if(TEST){
+      print(paste0("TEST for ", target, ": alert in ", pref))
+    }else{
+      POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ALERT: Something happened in ", pref)))
+    }
+  } 
+}
+
+update_record <- function(infections, pref){
+  file_latest <- paste0("infections_", pref, ".csv")
+  file_latest_path <- paste0("data/", file_latest)
+
+  if (any(dir("data") %in% file_latest)){
+      old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
+  }else{
+      old_infections <- infections
+  }
+
+  diff <- infections %>% anti_join(old_infections, by = "index")
+
+  growth <- nrow(infections) - nrow(old_infections) 
+
+  check_health <- growth >= 0
+  if(check_health) write_csv(infections, file_latest_path, na = "")
+}
 
 zentohan <- function(text){
   out <- text
