@@ -9,14 +9,23 @@ post_infection <- function(diff, pref, target, test){
 		    okayama = "https://www.pref.okayama.jp/page/667843.html"
 		    ) 
   
-  for(i in seq(to = nrow(diff))){
-    text <- paste0(icon, " ", pref_name, "発表\n",
-		  col["date"], ": ", diff[i,][[col["date"]]], ", ",
-		  col["age"], ": ", diff[i,][[col["age"]]], ", ",
-		  col["sex"], ": ", diff[i,][[col["sex"]]], ", ",
-		  col["location"], ": ", diff[i,][[col["location"]]],
-		  "\n", url_guide
-		  ) 
+  if(nrow(diff) < 20){
+    for(i in seq(to = nrow(diff))){
+      text <- paste0(icon, " ", pref_name, "発表\n",
+  		  col["date"], ": ", diff[i,][[col["date"]]], ", ",
+  		  col["age"], ": ", diff[i,][[col["age"]]], ", ",
+  		  col["sex"], ": ", diff[i,][[col["sex"]]], ", ",
+  		  col["location"], ": ", diff[i,][[col["location"]]],
+  		  "\n", url_guide
+  		  ) 
+      if(test){
+        print(paste0("TEST for ", target, ": ", text))
+      }else{
+        POST(url = target, encode = "json", body = list(text = text))
+      }
+    }
+  }else{
+    text <- paste0(icon, " ", pref_name, " 感染者多数\n", url_guide)
     if(test){
       print(paste0("TEST for ", target, ": ", text))
     }else{
