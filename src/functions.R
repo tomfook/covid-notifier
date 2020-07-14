@@ -1,4 +1,4 @@
-post_infection <- function(diff, pref, target, test){
+post_infection <- function(diff, pref, target, nmax = 20){
   col <- c(date = "発表日", age = "年代", sex = "性別", location = "居住地")
 
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県")
@@ -9,7 +9,7 @@ post_infection <- function(diff, pref, target, test){
 		    okayama = "https://www.pref.okayama.jp/page/667843.html"
 		    ) 
   
-  if(nrow(diff) < 20){
+  if(nrow(diff) < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
   		  col["date"], ": ", diff[i,][[col["date"]]], ", ",
@@ -18,15 +18,15 @@ post_infection <- function(diff, pref, target, test){
   		  col["location"], ": ", diff[i,][[col["location"]]],
   		  "\n", url_guide
   		  ) 
-      if(test){
+      if(TEST){
         print(paste0("TEST for ", target, ": ", text))
       }else{
         POST(url = target, encode = "json", body = list(text = text))
       }
     }
   }else{
-    text <- paste0(icon, " ", pref_name, " 感染者多数\n", url_guide)
-    if(test){
+    text <- paste0(icon, " ", pref_name, " 新規感染者多数", nrow(diff), " \n", url_guide)
+    if(TEST){
       print(paste0("TEST for ", target, ": ", text))
     }else{
       POST(url = target, encode = "json", body = list(text = text))
@@ -34,31 +34,34 @@ post_infection <- function(diff, pref, target, test){
   }
 }
 
-notify_infection <- function(infections, pref, target, test){
+notify_infection <- function(infection, target){
+  latest <- infection$data
+  pref <- infection$pref 
+
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
   
   if (any(dir("data") %in% file_latest)){
     old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
   }else{
-    old_infections <- infections
+    old_infections <- latest
   }
   
-  diff <- infections %>% anti_join(old_infections, by = "index") 
+  diff <- latest %>% anti_join(old_infections, by = "index") 
   
-  growth <- nrow(infections) - nrow(old_infections) 
+  growth <- nrow(latest) - nrow(old_infections) 
   
   check_health <- growth >= 0
   if(check_health){
     if(growth > 0){ 
-      post_infection(diff, pref, target, test)
+      post_infection(diff, pref, target)
     }else{
-      if(test){
+      if(TEST){
         print(paste0("TEST for ", target, ": No infection in ", pref))
       }
     }
   }else{
-    if(test){
+    if(TEST){
       print(paste0("TEST for ", target, ": alert in ", pref))
     }else{
       POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ALERT: Something happened in ", pref)))
@@ -66,22 +69,25 @@ notify_infection <- function(infections, pref, target, test){
   } 
 }
 
-update_record <- function(infections, pref){
+update_record <- function(infection){
+  latest <- infection$data
+  pref <- infection$pref
+
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
 
   if (any(dir("data") %in% file_latest)){
       old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
   }else{
-      old_infections <- infections
+      old_infections <- latest
   }
 
-  diff <- infections %>% anti_join(old_infections, by = "index")
+  diff <- latest %>% anti_join(old_infections, by = "index")
 
-  growth <- nrow(infections) - nrow(old_infections) 
+  growth <- nrow(latest) - nrow(old_infections) 
 
   check_health <- growth >= 0
-  if(check_health) write_csv(infections, file_latest_path, na = "")
+  if(check_health) write_csv(latest, file_latest_path, na = "")
 }
 
 zentohan <- function(text){
