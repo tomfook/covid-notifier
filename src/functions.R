@@ -1,4 +1,4 @@
-post_infection <- function(diff, pref, target, test){
+post_infection <- function(diff, pref, target){
   col <- c(date = "発表日", age = "年代", sex = "性別", location = "居住地")
 
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県")
@@ -18,7 +18,7 @@ post_infection <- function(diff, pref, target, test){
   		  col["location"], ": ", diff[i,][[col["location"]]],
   		  "\n", url_guide
   		  ) 
-      if(test){
+      if(TEST){
         print(paste0("TEST for ", target, ": ", text))
       }else{
         POST(url = target, encode = "json", body = list(text = text))
@@ -26,7 +26,7 @@ post_infection <- function(diff, pref, target, test){
     }
   }else{
     text <- paste0(icon, " ", pref_name, " 感染者多数\n", url_guide)
-    if(test){
+    if(TEST){
       print(paste0("TEST for ", target, ": ", text))
     }else{
       POST(url = target, encode = "json", body = list(text = text))
@@ -34,7 +34,7 @@ post_infection <- function(diff, pref, target, test){
   }
 }
 
-notify_infection <- function(infections, pref, target, test){
+notify_infection <- function(infections, pref, target){
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
   
@@ -51,14 +51,14 @@ notify_infection <- function(infections, pref, target, test){
   check_health <- growth >= 0
   if(check_health){
     if(growth > 0){ 
-      post_infection(diff, pref, target, test)
+      post_infection(diff, pref, target)
     }else{
-      if(test){
+      if(TEST){
         print(paste0("TEST for ", target, ": No infection in ", pref))
       }
     }
   }else{
-    if(test){
+    if(TEST){
       print(paste0("TEST for ", target, ": alert in ", pref))
     }else{
       POST(url = slack_webhookurl, encode = "json", body = list(text = paste0("ALERT: Something happened in ", pref)))
