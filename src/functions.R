@@ -1,4 +1,4 @@
-post_infection <- function(diff, pref, target){
+post_infection <- function(diff, pref, target, nmax = 20){
   col <- c(date = "発表日", age = "年代", sex = "性別", location = "居住地")
 
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県")
@@ -9,7 +9,7 @@ post_infection <- function(diff, pref, target){
 		    okayama = "https://www.pref.okayama.jp/page/667843.html"
 		    ) 
   
-  if(nrow(diff) < 20){
+  if(nrow(diff) < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
   		  col["date"], ": ", diff[i,][[col["date"]]], ", ",
@@ -25,7 +25,7 @@ post_infection <- function(diff, pref, target){
       }
     }
   }else{
-    text <- paste0(icon, " ", pref_name, " 感染者多数\n", url_guide)
+    text <- paste0(icon, " ", pref_name, " 新規感染者多数", nrow(diff), " \n", url_guide)
     if(TEST){
       print(paste0("TEST for ", target, ": ", text))
     }else{
