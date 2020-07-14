@@ -1,5 +1,7 @@
-# infection data schema 
-# ~index, ~発表日, ~年代, ~性別, ~居住地
+# infection data type
+# list of (df, str)
+# df: ~index, ~発表日, ~年代, ~性別, ~居住地
+# str: pref name
 
 get_latest_kyoto <- function(){ 
   url1 <- "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html" 
@@ -28,7 +30,8 @@ get_latest_kyoto <- function(){
     select(-gengo, -wareki, -year, -md) %>%
     rename(居住地 = 居住地等)
 
-  return(infections)
+  out <- list(data = infections, pref = "kyoto")
+  return(out)
 }
 
 get_latest_osaka <- function(){
@@ -43,7 +46,8 @@ get_latest_osaka <- function(){
     mutate(No = as.character(No)) %>%
     rename(発表日 = date, index = No)
 
-  return(infections)
+  out <- list(data = infections, pref = "osaka")
+  return(out)
 }
 
 get_latest_okayama <- function(){
@@ -72,5 +76,6 @@ get_latest_okayama <- function(){
     select(-year, -md) %>%
     rename(発表日 = 月日)
 
-  return(infections)
+  out <- list(data = infections, pref = "okayama")
+  return(out)
 }

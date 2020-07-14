@@ -34,19 +34,22 @@ post_infection <- function(diff, pref, target, nmax = 20){
   }
 }
 
-notify_infection <- function(infections, pref, target){
+notify_infection <- function(infection, target){
+  latest <- infection$data
+  pref <- infection$pref 
+
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
   
   if (any(dir("data") %in% file_latest)){
     old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
   }else{
-    old_infections <- infections
+    old_infections <- latest
   }
   
-  diff <- infections %>% anti_join(old_infections, by = "index") 
+  diff <- latest %>% anti_join(old_infections, by = "index") 
   
-  growth <- nrow(infections) - nrow(old_infections) 
+  growth <- nrow(latest) - nrow(old_infections) 
   
   check_health <- growth >= 0
   if(check_health){
@@ -66,22 +69,25 @@ notify_infection <- function(infections, pref, target){
   } 
 }
 
-update_record <- function(infections, pref){
+update_record <- function(infection){
+  latest <- infection$data
+  pref <- infection$pref
+
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
 
   if (any(dir("data") %in% file_latest)){
       old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
   }else{
-      old_infections <- infections
+      old_infections <- latest
   }
 
-  diff <- infections %>% anti_join(old_infections, by = "index")
+  diff <- latest %>% anti_join(old_infections, by = "index")
 
-  growth <- nrow(infections) - nrow(old_infections) 
+  growth <- nrow(latest) - nrow(old_infections) 
 
   check_health <- growth >= 0
-  if(check_health) write_csv(infections, file_latest_path, na = "")
+  if(check_health) write_csv(latest, file_latest_path, na = "")
 }
 
 zentohan <- function(text){
