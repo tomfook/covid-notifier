@@ -1,6 +1,4 @@
 post_infection <- function(diff, pref, target, nmax = 20){
-  col <- c(date = "発表日", age = "年代", sex = "性別", location = "居住地")
-
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県")
   icon <- switch(pref, kyoto = ":kyo:", osaka = ":han:", okayama = ":oka:")
   url_guide <- switch(pref,
@@ -12,10 +10,10 @@ post_infection <- function(diff, pref, target, nmax = 20){
   if(nrow(diff) < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
-  		  col["date"], ": ", diff[i,][[col["date"]]], ", ",
-  		  col["age"], ": ", diff[i,][[col["age"]]], ", ",
-  		  col["sex"], ": ", diff[i,][[col["sex"]]], ", ",
-  		  col["location"], ": ", diff[i,][[col["location"]]],
+  		  "発表日: ", diff[i,][["発表日"]], ", ",
+  		  "年代: ", diff[i,][["年代"]], ", ",
+  		  "性別: ", diff[i,][["性別"]], ", ",
+  		  "居住地: ", diff[i,][["居住地"]],
   		  "\n", url_guide
   		  ) 
       if(TEST){
@@ -25,11 +23,17 @@ post_infection <- function(diff, pref, target, nmax = 20){
       }
     }
   }else{
-    diff_by_loc <- diff %>% group_by(居住地) %>% summarise(n = n())
     text <- paste0(icon, " ", pref_name, " 新規感染者多数", "\n")
-    for(i in seq(to = nrow(diff_by_loc))){
-      text <- paste0(text, diff_by_loc[i,][[col["location"]]], ": ", diff_by_loc[i,][["n"]], "\n")
-    } 
+    diff_n <- diff %>% group_by(発表日, 居住地) %>% summarise(n = n())
+    dates <- sort(diff_n[["発表日"]]) 
+    for(i in seq(along.with = dates)){
+      text <- paste0(text, "発表日: ", dates[i], "\n")
+      diff_by_loc <- filter(diff_n, 発表日 == dates[i]) 
+      for(i in seq(to = nrow(diff_by_loc))){
+        text <- paste0(text, "居住地 ", diff_by_loc[i,][["居住地"]], ": ", diff_by_loc[i,][["n"]], "人\n")
+      } 
+      text <- paste0(text, "\n")
+    }
     text <- paste0(text, nrow(diff), " \n", url_guide)
     if(TEST){
       print(paste0("TEST for ", target, ": ", text))
