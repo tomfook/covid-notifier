@@ -1,7 +1,16 @@
 get_infections <- function(pref){
   source(paste0("scraper/", pref, ".R"), local = TRUE)
   infection <- scraper()
-  out <- list(latest = infection, pref = pref)
+
+  file_latest <- paste0("infections_", pref, ".csv")
+  file_latest_path <- paste0("data/", file_latest) 
+  if (any(dir("data") %in% file_latest)){
+    old_infection <- read_csv(file_latest_path, col_types = cols(.default = "c"))
+  }else{
+    old_infection <- infection
+  }
+
+  out <- list(latest = infection, old = old_infection, pref = pref)
   return(out)
 }
 
@@ -50,27 +59,19 @@ post_infection <- function(diff, pref, target, nmax = 20){
   }
 }
 
-notify_infection <- function(infection, target){
-  latest <- infection$latest
-  pref <- infection$pref 
+notify_infection <- function(infections, target, nmax = 20){
+  latest <- infections$latest
+  old <- infections$old
+  pref <- infections$pref 
 
-  file_latest <- paste0("infections_", pref, ".csv")
-  file_latest_path <- paste0("data/", file_latest)
+  diff <- latest %>% anti_join(old, by = "index") 
   
-  if (any(dir("data") %in% file_latest)){
-    old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
-  }else{
-    old_infections <- latest
-  }
-  
-  diff <- latest %>% anti_join(old_infections, by = "index") 
-  
-  growth <- nrow(latest) - nrow(old_infections) 
+  growth <- nrow(latest) - nrow(old) 
   
   check_health <- growth >= 0
   if(check_health){
     if(growth > 0){ 
-      post_infection(diff, pref, target)
+      post_infection(diff, pref, target, nmax)
     }else{
       if(TEST){
         print(paste0("TEST for ", target, ": No infection in ", pref))
@@ -85,22 +86,15 @@ notify_infection <- function(infection, target){
   } 
 }
 
-update_record <- function(infection){
-  latest <- infection$latest
-  pref <- infection$pref
+update_record <- function(infections){
+  latest <- infections$latest
+  old <- infections$old
+  pref <- infections$pref
 
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
 
-  if (any(dir("data") %in% file_latest)){
-      old_infections <- read_csv(file_latest_path, col_types = cols(.default = "c"))
-  }else{
-      old_infections <- latest
-  }
-
-  diff <- latest %>% anti_join(old_infections, by = "index")
-
-  growth <- nrow(latest) - nrow(old_infections) 
+  growth <- nrow(latest) - nrow(old) 
 
   check_health <- growth >= 0
   if(check_health) write_csv(latest, file_latest_path, na = "")
