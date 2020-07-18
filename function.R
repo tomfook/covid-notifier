@@ -41,16 +41,16 @@ post_infection <- function(diff, pref, target, nmax = 20){
   }else{
     text <- paste0(icon, " ", pref_name, " 新規感染者多数", "\n")
     diff_n <- diff %>% group_by(発表日, 居住地) %>% summarise(n = n())
-    dates <- sort(diff_n[["発表日"]]) 
+    dates <- sort(unique(diff_n[["発表日"]]))
     for(i in seq(along.with = dates)){
       text <- paste0(text, "発表日: ", dates[i], "\n")
       diff_by_loc <- filter(diff_n, 発表日 == dates[i]) 
-      for(i in seq(to = nrow(diff_by_loc))){
-        text <- paste0(text, "居住地 ", diff_by_loc[i,][["居住地"]], ": ", diff_by_loc[i,][["n"]], "人\n")
+      for(j in seq(to = nrow(diff_by_loc))){
+        text <- paste0(text, "居住地 ", diff_by_loc[j,][["居住地"]], ": ", diff_by_loc[j,][["n"]], "人\n")
       } 
       text <- paste0(text, "\n")
     }
-    text <- paste0(text, nrow(diff), " \n", url_guide)
+    text <- paste0(text, "計: ", nrow(diff), "人\n", url_guide)
     if(TEST){
       print(paste0("TEST for ", target, ": ", text))
     }else{
