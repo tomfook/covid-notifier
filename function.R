@@ -1,3 +1,10 @@
+get_infections <- function(pref){
+  source(paste0("scraper/", pref, ".R"), local = TRUE)
+  infection <- scraper()
+  out <- list(latest = infection, pref = pref)
+  return(out)
+}
+
 post_infection <- function(diff, pref, target, nmax = 20){
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県")
   icon <- switch(pref, kyoto = ":kyo:", osaka = ":han:", okayama = ":oka:")
@@ -44,7 +51,7 @@ post_infection <- function(diff, pref, target, nmax = 20){
 }
 
 notify_infection <- function(infection, target){
-  latest <- infection$data
+  latest <- infection$latest
   pref <- infection$pref 
 
   file_latest <- paste0("infections_", pref, ".csv")
@@ -79,7 +86,7 @@ notify_infection <- function(infection, target){
 }
 
 update_record <- function(infection){
-  latest <- infection$data
+  latest <- infection$latest
   pref <- infection$pref
 
   file_latest <- paste0("infections_", pref, ".csv")
@@ -107,3 +114,4 @@ zentohan <- function(text){
   }
   return(out)
 }
+
