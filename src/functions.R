@@ -25,7 +25,12 @@ post_infection <- function(diff, pref, target, nmax = 20){
       }
     }
   }else{
-    text <- paste0(icon, " ", pref_name, " 新規感染者多数", nrow(diff), " \n", url_guide)
+    diff_by_loc <- diff %>% group_by(居住地) %>% summarise(n = n())
+    text <- paste0(icon, " ", pref_name, " 新規感染者多数", "\n")
+    for(i in seq(to = nrow(diff_by_loc))){
+      text <- paste0(text, diff_by_loc[i,][[col["location"]]], ": ", diff_by_loc[i,][["n"]], "\n")
+    } 
+    text <- paste0(text, nrow(diff), " \n", url_guide)
     if(TEST){
       print(paste0("TEST for ", target, ": ", text))
     }else{
