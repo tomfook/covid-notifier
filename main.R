@@ -9,7 +9,7 @@ TEST <- FALSE
 
 source("secret.R") #slack_webhookurls
 
-source("src/functions.R")
+source("function.R")
 source("src/scraper.R")
 
 infection_kyoto <- get_latest_kyoto() 
