@@ -26,22 +26,17 @@ post_infection <- function(diff, pref, target, nmax = 20){
   if(nrow(diff) < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
-  		  "発表日: ", diff[i,][["発表日"]], ", ",
-  		  "年代: ", diff[i,][["年代"]], ", ",
-  		  "性別: ", diff[i,][["性別"]], ", ",
-  		  "居住地: ", diff[i,][["居住地"]],
+  		  "発表日: ", diff$発表日[i], ", ",
+  		  "年代: ", diff$年代[i], ", ",
+  		  "性別: ", diff$性別[i], ", ",
+  		  "居住地: ", diff$居住地[i],
   		  "\n", url_guide
   		  ) 
-      if(TEST){
-        print(paste0("TEST for ", target, ": ", text))
-      }else{
-        POST(url = target, encode = "json", body = list(text = text))
-      }
     }
   }else{
     text <- paste0(icon, " ", pref_name, " 新規感染者多数", "\n")
     diff_n <- diff %>% group_by(発表日, 居住地) %>% summarise(n = n())
-    dates <- sort(unique(diff_n[["発表日"]]))
+    dates <- sort(unique(diff_n$発表日))
     for(i in seq(along.with = dates)){
       text <- paste0(text, "発表日: ", dates[i], "\n")
       diff_by_loc <- filter(diff_n, 発表日 == dates[i]) 
@@ -51,11 +46,12 @@ post_infection <- function(diff, pref, target, nmax = 20){
       text <- paste0(text, "\n")
     }
     text <- paste0(text, "計: ", nrow(diff), "人\n", url_guide)
-    if(TEST){
-      print(paste0("TEST for ", target, ": ", text))
-    }else{
-      POST(url = target, encode = "json", body = list(text = text))
     }
+
+  if(TEST){
+    print(paste0("TEST for ", target, ": ", text))
+  }else{
+    POST(url = target, encode = "json", body = list(text = text))
   }
 }
 
