@@ -23,7 +23,10 @@ post_infection <- function(diff, pref, target, nmax = 20){
 		    okayama = "https://www.pref.okayama.jp/page/667843.html"
 		    ) 
   
-  if(nrow(diff) < nmax){
+  diff_n <- nrow(diff)
+  if(diff_n == 0){
+    stop("rows of diff seems to be zero.")
+  }else if(diff_n < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
   		  "発表日: ", diff$発表日[i], ", ",
@@ -35,17 +38,17 @@ post_infection <- function(diff, pref, target, nmax = 20){
     }
   }else{
     text <- paste0(icon, " ", pref_name, " 新規感染者多数", "\n")
-    diff_n <- diff %>% group_by(発表日, 居住地) %>% summarise(n = n())
-    dates <- sort(unique(diff_n$発表日))
+    diff_cnt <- diff %>% group_by(発表日, 居住地) %>% summarise(n = n())
+    dates <- sort(unique(diff_cnt$発表日))
     for(i in seq(along.with = dates)){
       text <- paste0(text, "発表日: ", dates[i], "\n")
-      diff_by_loc <- filter(diff_n, 発表日 == dates[i]) 
+      diff_by_loc <- filter(diff_cnt, 発表日 == dates[i]) 
       for(j in seq(to = nrow(diff_by_loc))){
         text <- paste0(text, "居住地 ", diff_by_loc[j,][["居住地"]], ": ", diff_by_loc[j,][["n"]], "人\n")
       } 
       text <- paste0(text, "\n")
     }
-    text <- paste0(text, "計: ", nrow(diff), "人\n", url_guide)
+    text <- paste0(text, "計: ", diff_n, "人\n", url_guide)
     }
 
   if(TEST){
@@ -55,14 +58,17 @@ post_infection <- function(diff, pref, target, nmax = 20){
   }
 }
 
-notify_infection <- function(infections, target, nmax = 20){
+notify_infection <- function(infections, target, location = NULL, nmax = 20){
   latest <- infections$latest
   old <- infections$old
   pref <- infections$pref 
 
-  diff <- latest %>% anti_join(old, by = "index") 
+  diff <- anti_join(latest, old, by = "index") 
+  if(!is.null(location)){
+    diff <- filter(diff, 居住地 == location)
+  }
   
-  growth <- nrow(latest) - nrow(old) 
+  growth <- nrow(diff)
   
   check_health <- growth >= 0
   if(check_health){
@@ -70,7 +76,7 @@ notify_infection <- function(infections, target, nmax = 20){
       post_infection(diff, pref, target, nmax)
     }else{
       if(TEST){
-        print(paste0("TEST for ", target, ": No infection in ", pref))
+        print(paste0("TEST for ", target, ": No infection in ", pref, location))
       }
     }
   }else{
