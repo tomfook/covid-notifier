@@ -1,6 +1,9 @@
 get_infections <- function(pref){
   source(paste0("scraper/", pref, ".R"), local = TRUE)
   infection <- scraper()
+  if(all(c("index", "発表日", "年代", "性別", "居住地") %in% names(infection))){
+    stop("ERROR: infection does not have required colmn!")
+  }
 
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest) 
@@ -25,7 +28,7 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
   
   diff_n <- nrow(diff)
   if(diff_n == 0){
-    stop("rows of diff seems to be zero.")
+    stop("ERROR: rows of diff seems to be zero.")
   }else if(diff_n < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
