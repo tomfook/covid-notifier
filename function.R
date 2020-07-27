@@ -1,7 +1,7 @@
 get_infections <- function(pref){
   source(paste0("scraper/", pref, ".R"), local = TRUE)
   infection <- scraper()
-  if(all(c("index", "発表日", "年代", "性別", "居住地") %in% names(infection))){
+  if(!all(c("index", "発表日", "年代", "性別", "居住地") %in% names(infection))){
     stop("ERROR: infection does not have required colmn!")
   }
 

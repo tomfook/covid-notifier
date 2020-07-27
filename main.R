@@ -26,5 +26,5 @@ notify_infection(infection_okayama, post_slack_message(slack_webhookurl), target
 update_record(infection_okayama)
 
 infection_kagawa <- get_infections("kagawa")
-notify_infection(infection_kagawa, post_linenotify_message(line_token), target_name = "line2")
+notify_infection(infection_kagawa, post_linenotify_message(line_token), target_name = "line1")
 update_record(infection_kagawa)
