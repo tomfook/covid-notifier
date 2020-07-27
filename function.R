@@ -53,8 +53,9 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
       text <- paste0(text, "発表日: ", dates[i], "\n")
       diff_by_loc <- filter(diff_cnt, 発表日 == dates[i]) 
       for(j in seq(to = nrow(diff_by_loc))){
-        text <- paste0(text, "居住地 ", diff_by_loc[j,][["居住地"]], ": ", diff_by_loc[j,][["n"]], "人\n")
+        text <- paste0(text, " 居住地 ", diff_by_loc$居住地[j], ": ", diff_by_loc$n[j], "人\n")
       } 
+      text <- paste0(text, " ", dates[i], "計:", sum(diff_by_loc$n), "人\n")
       text <- paste0(text, "\n")
     }
     text <- paste0(text, "計: ", diff_n, "人\n", url_guide)
