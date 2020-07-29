@@ -7,11 +7,11 @@ get_infections <- function(pref){
 
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest) 
-  if (any(dir("data") %in% file_latest)){
-    old_infection <- read_csv(file_latest_path, col_types = cols(.default = "c"))
-  }else{
-    old_infection <- infection
-  }
+
+  old_infection <- tryCatch(
+	   error = function(cnd) infection,
+	   read_csv(file_latest_path, col_types = cols(.default = "c"))
+  )
 
   out <- list(latest = infection, old = old_infection, pref = pref)
   return(out)
