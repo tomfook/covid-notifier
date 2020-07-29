@@ -2,16 +2,16 @@ get_infections <- function(pref){
   source(paste0("scraper/", pref, ".R"), local = TRUE)
   infection <- scraper()
   if(!all(c("index", "発表日", "年代", "性別", "居住地") %in% names(infection))){
-    stop("ERROR: infection does not have required colmn!")
+    stop("return of a scraper does not have required column")
   }
 
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest) 
-  if (any(dir("data") %in% file_latest)){
-    old_infection <- read_csv(file_latest_path, col_types = cols(.default = "c"))
-  }else{
-    old_infection <- infection
-  }
+
+  old_infection <- tryCatch(
+	   error = function(cnd) infection,
+	   read_csv(file_latest_path, col_types = cols(.default = "c"))
+  )
 
   out <- list(latest = infection, old = old_infection, pref = pref)
   return(out)
@@ -29,7 +29,7 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
   
   diff_n <- nrow(diff)
   if(diff_n == 0){
-    stop("ERROR: rows of diff seems to be zero.")
+    stop("rows of diff seems to be zero.")
   }else if(diff_n < nmax){
     for(i in seq(to = nrow(diff))){
       text <- paste0(icon, " ", pref_name, "発表\n",
@@ -39,11 +39,8 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
   		  "居住地: ", diff$居住地[i],
   		  "\n", url_guide
   		  ) 
-      if(TEST){
-        print(paste0("TEST for ", target_name, ": ", text))
-      }else{
-        invoke(POST, target(text))
-      }
+      if(!TEST)invoke(POST, target(text))
+      message(paste0(target_name, ": ", text))
     }
   }else{
     text <- paste0(icon, " ", pref_name, " 新規感染者多数", "\n")
@@ -59,13 +56,9 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
       text <- paste0(text, "\n")
     }
     text <- paste0(text, "計: ", diff_n, "人\n", url_guide)
-    if(TEST){
-      print(paste0("TEST for ", target_name, ": ", text))
-    }else{
-      invoke(POST, target(text))
-    }
-  }
-
+    if(!TEST) invoke(POST, target(text))
+    message(paste0(target_name, ": ", text))
+  } 
 }
 
 notify_infection <- function(infections, target, target_name = NULL, location = NULL, nmax = 20){
@@ -85,16 +78,11 @@ notify_infection <- function(infections, target, target_name = NULL, location = 
     if(growth > 0){ 
       post_infection(diff, pref, target, target_name, nmax)
     }else{
-      if(TEST){
-        print(paste0("TEST for ", target_name, ": No infection in ", pref, location))
-      }
+      message(paste0("TEST for ", target_name, ": No infection in ", pref, location))
     }
   }else{
-    if(TEST){
-      print(paste0("TEST for ", target_name, ": alert in ", pref))
-    }else{
-      invoke(POST, target(paste0("ALERT: Something happened in ", pref)))
-    }
+    if(!TEST) invoke(POST, target(paste0("ALERT: Something happened in ", pref)))
+    message(paste0("TEST for ", target_name, ": alert in ", pref))
   } 
 }
 
