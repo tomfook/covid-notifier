@@ -94,7 +94,9 @@ update_record <- function(infections){
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
 
-  growth <- nrow(latest) - nrow(old) 
+  diff <- anti_join(latest, old, by = "index") 
+  
+  growth <- nrow(diff)
 
   check_health <- growth >= 0
   if(check_health) write_csv(latest, file_latest_path, na = "")
