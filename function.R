@@ -17,7 +17,7 @@ get_infections <- function(pref){
   return(out)
 }
 
-post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
+post_infection <- function(diff, pref, target, target_name = NULL, nmax = 10){
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県", kagawa = "香川県")
   icon <- switch(pref, kyoto = ":kyo:", osaka = ":han:", okayama = ":oka:")
   url_guide <- switch(pref,
@@ -61,7 +61,7 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 20){
   } 
 }
 
-notify_infection <- function(infections, target, target_name = NULL, location = NULL, nmax = 20){
+notify_infection <- function(infections, target, target_name = NULL, location = NULL, nmax = 10){
   latest <- infections$latest
   old <- infections$old
   pref <- infections$pref 
