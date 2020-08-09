@@ -16,6 +16,8 @@ get_infections <- function(pref){
   growth <- nrow(diff) 
   check_health <- growth >= 0
 
+  if(check_health) write_csv(infection, file_latest, na = "")
+
   out <- list(latest = infection, old = old_infection, diff = diff, pref = pref, health = check_health)
   return(out)
 }
@@ -85,17 +87,6 @@ notify_infection <- function(infections, target, target_name = NULL, location = 
     if(!TEST) invoke(POST, target(paste0("ALERT: Something happened in ", pref)))
     message(paste0("TEST for ", target_name, ": alert in ", pref))
   } 
-}
-
-update_record <- function(infections){
-  latest <- infections$latest
-  old <- infections$old
-  pref <- infections$pref
-
-  file_latest <- paste0("infections_", pref, ".csv")
-  file_latest_path <- paste0("data/", file_latest)
-
-  if(infections$health) write_csv(latest, file_latest_path, na = "")
 }
 
 zentohan <- function(text){
