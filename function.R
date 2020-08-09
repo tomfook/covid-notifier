@@ -13,7 +13,11 @@ get_infections <- function(pref){
 	   read_csv(file_latest_path, col_types = cols(.default = "c"))
   )
 
-  out <- list(latest = infection, old = old_infection, pref = pref)
+  diff <- anti_join(infection, old_infection, by = "index") 
+  growth <- nrow(diff) 
+  check_health <- growth >= 0
+
+  out <- list(latest = infection, old = old_infection, diff = diff, pref = pref, health = check_health)
   return(out)
 }
 
@@ -65,16 +69,14 @@ notify_infection <- function(infections, target, target_name = NULL, location = 
   latest <- infections$latest
   old <- infections$old
   pref <- infections$pref 
+  diff <- infections$diff
 
-  diff <- anti_join(latest, old, by = "index") 
   if(!is.null(location)){
     diff <- filter(diff, 居住地 == location)
-  }
+  } 
+  growth <- nrow(diff) 
   
-  growth <- nrow(diff)
-  
-  check_health <- growth >= 0
-  if(check_health){
+  if(infections$health){
     if(growth > 0){ 
       post_infection(diff, pref, target, target_name, nmax)
     }else{
@@ -94,12 +96,7 @@ update_record <- function(infections){
   file_latest <- paste0("infections_", pref, ".csv")
   file_latest_path <- paste0("data/", file_latest)
 
-  diff <- anti_join(latest, old, by = "index") 
-  
-  growth <- nrow(diff)
-
-  check_health <- growth >= 0
-  if(check_health) write_csv(latest, file_latest_path, na = "")
+  if(infections$health) write_csv(latest, file_latest_path, na = "")
 }
 
 zentohan <- function(text){
