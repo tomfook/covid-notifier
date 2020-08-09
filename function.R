@@ -5,12 +5,11 @@ get_infections <- function(pref){
     stop("return of a scraper does not have required column")
   }
 
-  file_latest <- paste0("infections_", pref, ".csv")
-  file_latest_path <- paste0("data/", file_latest) 
+  file_latest <- paste0("data/infections_", pref, ".csv")
 
   old_infection <- tryCatch(
 	   error = function(cnd) infection,
-	   read_csv(file_latest_path, col_types = cols(.default = "c"))
+	   read_csv(file_latest, col_types = cols(.default = "c"))
   )
 
   diff <- anti_join(infection, old_infection, by = "index") 
