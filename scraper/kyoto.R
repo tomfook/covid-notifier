@@ -12,7 +12,7 @@ scraper <- function(){
   get_infection <- function(url){
     read_html(url) %>%
       html_table %>%
-      keep(~all(names(.)==colnames_def)) %>%
+      keep(~identical(names(.), colnames_def)) %>%
       map(magrittr::set_names, colnames_mod) %>%
       map(mutate, 年代 = as.character(年代)) %>%
       bind_rows
