@@ -1,0 +1,3 @@
+# how to set program
+$ crontab -e
+0 8 * * * cd ~/Documents/dev-apps/covid-notifier;Rscript main.R
