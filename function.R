@@ -26,9 +26,9 @@ post_infection <- function(diff, pref, target, target_name = NULL, nmax = 10){
   pref_name <- switch(pref, kyoto = "京都府", osaka = "大阪府", okayama = "岡山県", kagawa = "香川県")
   icon <- switch(pref, kyoto = ":kyo:", osaka = ":han:", okayama = ":oka:")
   url_guide <- switch(pref,
-		    kyoto = "http://www.pref.kyoto.jp/kentai/corona/hassei1-50.html",
+		    kyoto = "https://kyoto.stopcovid19.jp/about",
 		    osaka = "http://www.pref.osaka.lg.jp/hodo/index.php?site=fumin",
-		    okayama = "https://www.pref.okayama.jp/page/667843.html",
+		    okayama = "https://okayama.stopcovid19.jp/",
 		    kagawa = "https://www.pref.kagawa.lg.jp/content/etc/subsite/kansenshoujouhou/kansen/se9si9200517102553.shtml"
 		    ) 
   
