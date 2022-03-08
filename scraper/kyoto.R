@@ -3,7 +3,7 @@
 # df: ~index, ~発表日, ~年代, ~性別, ~居住地
 
 scraper <- function(){
-  kyoto_url <- "https://raw.githubusercontent.com/stop-covid19-kyoto/covid19-kyoto/master/data/patients.json"
+  kyoto_url <- "https://raw.githubusercontent.com/stop-covid19-kyoto/covid19-kyoto/development/data/patients.json"
   
   infection <- GET(kyoto_url) %>%
     content %>%
